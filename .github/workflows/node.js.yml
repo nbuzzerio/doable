@@ -37,6 +37,10 @@ jobs:
         if: steps.pm2_check.outputs.exists == 'true'
         run: pm2 stop doable
 
+      # Access client folder
+      - name: Access client folder
+        run: cd client
+
       # Install npm packages
       - name: Install npm packages
         run: npm i
@@ -44,6 +48,10 @@ jobs:
       # Run the build
       - name: Build for production
         run: npm run build --if-present
+
+      # Return to root folder
+      - name: Return to root folder
+        run: cd ..
 
       # Start pm2 process if it doesn't exist
       - name: Start pm2 process
