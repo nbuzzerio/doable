@@ -38,16 +38,20 @@ jobs:
         run: pm2 stop doable
 
       # Install client npm packages
-      - name: Install npm packages
+      - name: Install client npm packages
         run: cd client && npm i
 
         # Install server npm packages
       - name: Install npm packages
         run: npm i
 
-      # Run the build
-      - name: Build for production
+      # Run the client build
+      - name: Build client for production
         run: cd client && npm run build --if-present
+
+        # Run the server build
+      - name: Build for production
+        run: npm run build:server
 
       # Start pm2 process if it doesn't exist
       - name: Start pm2 process
