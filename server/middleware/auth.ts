@@ -17,12 +17,14 @@ export default function (
   }
 
   try {
-    const jwtPrivateKey = process.env.jwtPrivateKey;
-    if (!jwtPrivateKey) {
-      throw new Error("jwtPrivateKey is not defined in environment variables.");
+    const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY;
+    if (!JWT_PRIVATE_KEY) {
+      throw new Error(
+        "JWT_PRIVATE_KEY is not defined in environment variables.",
+      );
     }
 
-    const decoded = jwt.verify(token, jwtPrivateKey);
+    const decoded = jwt.verify(token, JWT_PRIVATE_KEY);
     req.user = decoded;
     next();
   } catch (ex) {

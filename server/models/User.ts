@@ -19,12 +19,12 @@ const UserSchema = new Schema<IUser>({
 
 // Method to generate JWT
 UserSchema.methods.generateAuthToken = function (): string {
-  if (!process.env.jwtPrivateKey) {
-    throw new Error("FATAL ERROR: jwtPrivateKey is not defined.");
+  if (!process.env.JWT_PRIVATE_KEY) {
+    throw new Error("FATAL ERROR: JWT_PRIVATE_KEY is not defined.");
   }
   const token = jwt.sign(
     { _id: this._id, username: this.username, email: this.email },
-    process.env.jwtPrivateKey,
+    process.env.JWT_PRIVATE_KEY,
   );
   return token;
 };

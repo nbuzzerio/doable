@@ -25,7 +25,10 @@ jobs:
           cache: "npm"
 
       - name: Set env variables in .env
-        run: echo "PORT=${{secrets.PORT}}" >> .env
+        run: |
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "jwtPrivateKey=${{ secrets.JWT_PRIVATE_KEY }}" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
 
       # Check if pm2 process with name 'doable' exists
       - name: Check if pm2 process exists
