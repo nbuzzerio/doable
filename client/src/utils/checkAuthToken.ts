@@ -1,7 +1,9 @@
 import { jwtDecode } from "jwt-decode";
 
 interface Props {
-  setUser: React.Dispatch<React.SetStateAction<string>>;
+  setUser: React.Dispatch<
+    React.SetStateAction<{ _id: string; name?: string } | null>
+  >;
 }
 
 const checkAuthToken = ({ setUser }: Props) => {
@@ -15,12 +17,12 @@ const checkAuthToken = ({ setUser }: Props) => {
         try {
           const decoded = jwtDecode<{
             _id: string;
-            email: string;
+            name: string;
             iat: number;
           }>(token);
 
           if (decoded && decoded._id) {
-            setUser(decoded._id);
+            setUser({ _id: decoded._id, name: decoded.name });
           } else {
             console.error("Invalid token payload:", decoded);
           }

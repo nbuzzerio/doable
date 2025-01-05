@@ -5,9 +5,11 @@ import SignInForm from "./components/SignInForm";
 import checkAuthToken from "./utils/checkAuthToken";
 import Nav from "./components/Nav";
 
+export type User = { _id: string; name?: string } | null;
+
 function App() {
   const theme = useTheme();
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState<User>(null);
   const [login, setLogin] = useState<"signin" | "signup" | "">("signin");
 
   useEffect(() => {
@@ -25,7 +27,7 @@ function App() {
   const handleLogOut = () => {
     document.cookie =
       "x-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    setUser("");
+    setUser(null);
   };
 
   return (

@@ -9,7 +9,10 @@ export interface AuthResponse {
 }
 
 export async function signIn(formData: FormState): Promise<AuthResponse> {
-  const response = await fetch("/doable/api/auth", {
+  const isLocalhost = window.location.hostname === "localhost";
+  const baseUrl = isLocalhost ? "/api/auth" : "/doable/api/auth";
+
+  const response = await fetch(baseUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -1,5 +1,7 @@
+import { User } from "../App";
+
 interface Props {
-  user: string;
+  user: User;
   handleLogOut: () => void;
   handleLogIn: () => void;
 }

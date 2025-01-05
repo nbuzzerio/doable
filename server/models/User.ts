@@ -23,7 +23,7 @@ UserSchema.methods.generateAuthToken = function (): string {
     throw new Error("FATAL ERROR: JWT_PRIVATE_KEY is not defined.");
   }
   const token = jwt.sign(
-    { _id: this._id, username: this.username, email: this.email },
+    { _id: this._id, name: this.name, email: this.email },
     process.env.JWT_PRIVATE_KEY,
   );
   return token;

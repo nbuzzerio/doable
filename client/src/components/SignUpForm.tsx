@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { signUp, SignUpFormState } from "../services/signUpService";
+import { User } from "../App";
 
 interface SignUpFormProps {
   setLogin: React.Dispatch<React.SetStateAction<"" | "signin" | "signup">>;
-  setUser: React.Dispatch<React.SetStateAction<string>>;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ setLogin, setUser }) => {
@@ -30,7 +31,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setLogin, setUser }) => {
       const data = await signUp(formData);
       setSuccess("User registered successfully!");
       document.cookie = `x-auth-token=${data.token}`;
-      setUser(data.userId);
+      setUser({ _id: data.userId });
       setFormData({ name: "", email: "", password: "" });
     } catch (err: unknown) {
       if (err instanceof Error) {
