@@ -28,6 +28,7 @@ const SignInForm: React.FC<SignupFormProps> = ({ setLogin }) => {
       const data = await signIn(formData);
       setSuccess("User registered successfully!");
       document.cookie = `x-auth-token=${data.token}`;
+      setLogin("");
       setFormData({ email: "", password: "" });
     } catch (err: unknown) {
       if (err instanceof Error) {
