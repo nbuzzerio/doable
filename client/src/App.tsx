@@ -54,9 +54,7 @@ function App() {
           </button>
         )}
       </nav>
-      {login === "signin" ? (
-        <SignInForm setUser={setUser} setLogin={setLogin} />
-      ) : null}
+      {login === "signin" ? <SignInForm setLogin={setLogin} /> : null}
       {login === "signup" ? (
         <SignUpForm setUser={setUser} setLogin={setLogin} />
       ) : null}

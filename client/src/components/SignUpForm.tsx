@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-
-interface FormState {
-  name: string;
-  email: string;
-  password: string;
-}
+import { signUp, SignUpFormState } from "../services/signUpService";
 
 interface SignUpFormProps {
   setLogin: React.Dispatch<React.SetStateAction<"" | "signin" | "signup">>;
@@ -12,7 +7,7 @@ interface SignUpFormProps {
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ setLogin, setUser }) => {
-  const [formData, setFormData] = useState<FormState>({
+  const [formData, setFormData] = useState<SignUpFormState>({
     name: "",
     email: "",
     password: "",
@@ -32,23 +27,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setLogin, setUser }) => {
     setSuccess(null);
 
     try {
-      const response = await fetch("/doable/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.error || "An error occurred");
-      }
-
-      const data = await response.json();
+      const data = await signUp(formData);
       setSuccess("User registered successfully!");
       document.cookie = `x-auth-token=${data.token}`;
-      setUser(data.token);
+      setUser(data.userId);
       setFormData({ name: "", email: "", password: "" });
     } catch (err: unknown) {
       if (err instanceof Error) {
