@@ -67,6 +67,7 @@ export const registerUser = async (
       token: token,
     });
   } catch (ex) {
+    console.error(ex);
     if (ex instanceof mongoose.Error.ValidationError) {
       for (const field in ex.errors) {
         console.error(ex.errors[field].message);

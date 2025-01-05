@@ -48,13 +48,9 @@ jobs:
       - name: Install npm packages
         run: npm i
 
-      # Run the client build
-      - name: Build client for production
-        run: cd client && npm run build --if-present
-
-        # Run the server build
+      # Run the build
       - name: Build for production
-        run: npm run build:server
+        run: npm run build --if-present
 
       # Start pm2 process if it doesn't exist
       - name: Start pm2 process
