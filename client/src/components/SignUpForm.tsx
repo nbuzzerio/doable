@@ -32,7 +32,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setLogin, setUser }) => {
     setSuccess(null);
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/doable/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

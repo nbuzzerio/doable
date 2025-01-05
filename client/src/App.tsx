@@ -22,7 +22,8 @@ function App() {
   };
 
   const handleLogOut = () => {
-    document.cookie = "x-auth-token=";
+    document.cookie =
+      "x-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     setUser("");
   };
 
