@@ -7,6 +7,7 @@ import { dirname, join } from "path";
 import mongoose from "mongoose";
 import authRoutes from "./server/dist/routes/authRoutes.js";
 import userRoutes from "./server/dist/routes/userRoutes.js";
+import listRoutes from "./server/dist/routes/listRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,9 +22,11 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/lists", listRoutes);
 
 app.use(express.static(join(__dirname, "client/dist")));
 
