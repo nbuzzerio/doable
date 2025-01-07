@@ -4,6 +4,7 @@ import SignUpForm from "./components/SignUpForm";
 import SignInForm from "./components/SignInForm";
 import checkAuthToken from "./utils/checkAuthToken";
 import Nav from "./components/Nav";
+import UserLists from "./components/UserLists";
 
 export type User = { _id: string; name?: string } | null;
 
@@ -14,7 +15,7 @@ function App() {
 
   useEffect(() => {
     checkAuthToken({ setUser });
-  }, []);
+  }, [login]);
 
   useEffect(() => {
     setLogin(user ? "" : "signin");
@@ -39,6 +40,7 @@ function App() {
       {login === "signup" ? (
         <SignUpForm setUser={setUser} setLogin={setLogin} />
       ) : null}
+      {user ? <UserLists userId={user._id} /> : null}
     </div>
   );
 }
