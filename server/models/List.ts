@@ -15,7 +15,7 @@ interface IList extends Document {
 
 const ListSchema = new Schema<IList>({
   userId: { type: Schema.Types.ObjectId, ref: "doable-users", required: true },
-  type: { type: String, default: "Miscellaneous" },
+  type: { type: String, required: true },
   listName: { type: String, required: true },
   items: [
     {

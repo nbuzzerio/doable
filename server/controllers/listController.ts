@@ -5,9 +5,9 @@ export const createList = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const { userId, listName } = req.body;
+  const { userId, listName, type } = req.body;
   try {
-    const newList = new List({ userId, listName });
+    const newList = new List({ userId, listName, type });
     await newList.save();
     res.status(201).json(newList);
   } catch (error) {

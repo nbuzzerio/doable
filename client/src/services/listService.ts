@@ -1,7 +1,8 @@
 export interface ListResponse {
-  id: string;
+  _id: string;
   userId: string;
   listName: string;
+  type: string;
   items: { content: string; order: number }[];
 }
 
@@ -16,13 +17,14 @@ const baseUrl = isLocalhost ? "/api/lists" : "/doable/api/lists";
 export async function createList(
   userId: string,
   listName: string,
+  type: string,
 ): Promise<ListResponse> {
   const response = await fetch(baseUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ userId, listName }),
+    body: JSON.stringify({ userId, listName, type }),
   });
 
   if (!response.ok) {
