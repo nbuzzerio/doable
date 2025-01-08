@@ -181,7 +181,7 @@ const UserLists: React.FC<Props> = ({ userId }) => {
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="w-1/3 rounded-lg bg-white p-6">
+          <div className="w-4/5 rounded-lg bg-white p-6 md:w-1/3">
             <h3 className="mb-4 text-xl font-bold">
               {isCreating ? "Create New List" : "List Details"}
             </h3>
