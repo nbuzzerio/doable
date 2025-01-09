@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface ListModalProps {
   isOpen: boolean;
@@ -10,6 +10,7 @@ interface ListModalProps {
   onClose: () => void;
   onSave: () => void;
   onCreate: () => void;
+  onAddItem: (content: string) => void;
   onDelete: () => void;
   onEditStart: () => void;
   onEditCancel: () => void;
@@ -17,6 +18,7 @@ interface ListModalProps {
   onConfirmDeleteCancel: () => void;
   onEditListNameChange: (value: string) => void;
   onEditListTypeChange: (value: string) => void;
+  listItems: { itemId: string; content: string; order: number }[] | undefined;
 }
 
 const ListModal: React.FC<ListModalProps> = ({
@@ -29,6 +31,7 @@ const ListModal: React.FC<ListModalProps> = ({
   onClose,
   onSave,
   onCreate,
+  onAddItem,
   onDelete,
   onEditStart,
   onEditCancel,
@@ -36,7 +39,10 @@ const ListModal: React.FC<ListModalProps> = ({
   onConfirmDeleteCancel,
   onEditListNameChange,
   onEditListTypeChange,
+  listItems = [],
 }) => {
+  const [newItem, setNewItem] = useState("");
+
   if (!isOpen) return null;
 
   return (
@@ -140,9 +146,41 @@ const ListModal: React.FC<ListModalProps> = ({
                   />
                 </div>
               </>
-            ) : null}
+            ) : (
+              <div className="flex items-center justify-between gap-4">
+                <label className="block font-bold">Add:</label>
+                <input
+                  type="text"
+                  value={newItem}
+                  onChange={(e) => setNewItem(e.target.value)}
+                  className="w-full rounded border border-gray-300 px-2 py-1"
+                  disabled={isEditing && isCreating}
+                />
+                <button
+                  onClick={() => onAddItem(newItem)}
+                  className="rounded bg-green-500 p-1 text-white hover:bg-green-600"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                  >
+                    <path d="M20.285 6.715c-.391-.39-1.023-.39-1.414 0l-9.192 9.193-4.242-4.243c-.391-.39-1.023-.39-1.414 0s-.39 1.023 0 1.414l5 5c.391.39 1.023.39 1.414 0l10-10c.391-.391.391-1.023 0-1.414z" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </>
         )}
+        <ul className="flex flex-col">
+          {listItems.map((item) => {
+            return (
+              <li className="list-item py-2 text-red-600">{item.content}</li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );

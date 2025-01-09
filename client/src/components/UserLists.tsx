@@ -5,6 +5,7 @@ import {
   updateList,
   createList,
   ListResponse,
+  addItem,
 } from "../services/listService";
 import ListModal from "./ListModal";
 
@@ -114,6 +115,21 @@ const UserLists: React.FC<Props> = ({ userId }) => {
     }
   };
 
+  const handleAddItem = async (content: string) => {
+    if (!selectedList) return;
+
+    try {
+      await addItem(selectedList._id, content);
+      setLists(
+        (prev) => prev?.filter((list) => list._id !== selectedList._id) || null,
+      );
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Failed to add item to the list.",
+      );
+    }
+  };
+
   const memoizedCategorizedLists = useMemo(() => {
     if (!lists) return null;
 
@@ -179,6 +195,7 @@ const UserLists: React.FC<Props> = ({ userId }) => {
         onClose={closeModal}
         onSave={handleEditSave}
         onCreate={handleCreateSave}
+        onAddItem={handleAddItem}
         onDelete={handleDelete}
         onEditStart={() => setIsEditing(true)}
         onEditCancel={() => setIsEditing(false)}
@@ -186,6 +203,7 @@ const UserLists: React.FC<Props> = ({ userId }) => {
         onConfirmDeleteCancel={() => setIsConfirmingDelete(false)}
         onEditListNameChange={setEditListName}
         onEditListTypeChange={setEditListType}
+        listItems={selectedList?.items}
       />
     </div>
   );
