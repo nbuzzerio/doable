@@ -6,6 +6,7 @@ import {
   createList,
   ListResponse,
 } from "../services/listService";
+import ListModal from "./ListModal";
 
 interface Props {
   userId: string;
@@ -29,11 +30,9 @@ const UserLists: React.FC<Props> = ({ userId }) => {
       const data = await getLists(userId);
       setLists(data);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred",
+      );
     } finally {
       setLoading(false);
     }
@@ -81,11 +80,9 @@ const UserLists: React.FC<Props> = ({ userId }) => {
       );
       closeModal();
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Failed to update the list.");
-      }
+      setError(
+        err instanceof Error ? err.message : "Failed to update the list.",
+      );
     }
   };
 
@@ -95,11 +92,9 @@ const UserLists: React.FC<Props> = ({ userId }) => {
       setLists((prev) => (prev ? [newList, ...prev] : [newList]));
       closeModal();
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Failed to create the list.");
-      }
+      setError(
+        err instanceof Error ? err.message : "Failed to create the list.",
+      );
     }
   };
 
@@ -113,23 +108,18 @@ const UserLists: React.FC<Props> = ({ userId }) => {
       );
       closeModal();
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Failed to delete the list.");
-      }
+      setError(
+        err instanceof Error ? err.message : "Failed to delete the list.",
+      );
     }
   };
 
-  // Memoize the categorized list rendering
   const memoizedCategorizedLists = useMemo(() => {
     if (!lists) return null;
 
     const groupedLists = lists.reduce<Record<string, ListResponse[]>>(
       (acc, list) => {
-        if (!acc[list.type]) {
-          acc[list.type] = [];
-        }
+        if (!acc[list.type]) acc[list.type] = [];
         acc[list.type].push(list);
         return acc;
       },
@@ -179,97 +169,24 @@ const UserLists: React.FC<Props> = ({ userId }) => {
         <p className="py-5 text-lg text-white">No lists found.</p>
       )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="w-4/5 rounded-lg bg-white p-6 md:w-1/3">
-            <h3 className="mb-4 text-xl font-bold">
-              {isCreating ? "Create New List" : "List Details"}
-            </h3>
-            {isConfirmingDelete ? (
-              <div className="text-center">
-                <p className="mb-4">
-                  Are you sure you want to delete this list?
-                </p>
-                <div className="flex justify-center">
-                  <button
-                    onClick={handleDelete}
-                    className="mr-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onClick={() => setIsConfirmingDelete(false)}
-                    className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="mb-4">
-                  <label className="block font-bold">List Name:</label>
-                  <input
-                    type="text"
-                    value={editListName}
-                    onChange={(e) => setEditListName(e.target.value)}
-                    className="w-full rounded border border-gray-300 px-2 py-1"
-                    disabled={!isEditing && !isCreating}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block font-bold">List Type:</label>
-                  <input
-                    type="text"
-                    value={editListType}
-                    onChange={(e) => setEditListType(e.target.value)}
-                    className="w-full rounded border border-gray-300 px-2 py-1"
-                    disabled={!isEditing && !isCreating}
-                  />
-                </div>
-                <div className="flex justify-end">
-                  {isCreating ? (
-                    <button
-                      onClick={handleCreateSave}
-                      className="mr-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                    >
-                      Create
-                    </button>
-                  ) : isEditing ? (
-                    <button
-                      onClick={handleEditSave}
-                      className="mr-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="mr-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                  )}
-                  <button
-                    onClick={closeModal}
-                    className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-                  >
-                    Close
-                  </button>
-                  {!isCreating && !isEditing && (
-                    <button
-                      onClick={() => setIsConfirmingDelete(true)}
-                      className="ml-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <ListModal
+        isOpen={isModalOpen}
+        isCreating={isCreating}
+        isEditing={isEditing}
+        isConfirmingDelete={isConfirmingDelete}
+        editListName={editListName}
+        editListType={editListType}
+        onClose={closeModal}
+        onSave={handleEditSave}
+        onCreate={handleCreateSave}
+        onDelete={handleDelete}
+        onEditStart={() => setIsEditing(true)}
+        onEditCancel={() => setIsEditing(false)}
+        onConfirmDeleteStart={() => setIsConfirmingDelete(true)}
+        onConfirmDeleteCancel={() => setIsConfirmingDelete(false)}
+        onEditListNameChange={setEditListName}
+        onEditListTypeChange={setEditListType}
+      />
     </div>
   );
 };

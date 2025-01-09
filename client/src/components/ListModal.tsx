@@ -1,0 +1,151 @@
+import React from "react";
+
+interface ListModalProps {
+  isOpen: boolean;
+  isCreating: boolean;
+  isEditing: boolean;
+  isConfirmingDelete: boolean;
+  editListName: string;
+  editListType: string;
+  onClose: () => void;
+  onSave: () => void;
+  onCreate: () => void;
+  onDelete: () => void;
+  onEditStart: () => void;
+  onEditCancel: () => void;
+  onConfirmDeleteStart: () => void;
+  onConfirmDeleteCancel: () => void;
+  onEditListNameChange: (value: string) => void;
+  onEditListTypeChange: (value: string) => void;
+}
+
+const ListModal: React.FC<ListModalProps> = ({
+  isOpen,
+  isCreating,
+  isEditing,
+  isConfirmingDelete,
+  editListName,
+  editListType,
+  onClose,
+  onSave,
+  onCreate,
+  onDelete,
+  onEditStart,
+  onEditCancel,
+  onConfirmDeleteStart,
+  onConfirmDeleteCancel,
+  onEditListNameChange,
+  onEditListTypeChange,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
+      <div className="relative w-4/5 rounded-lg bg-white px-6 py-20 md:w-1/3">
+        <button
+          onClick={onClose}
+          className="absolute right-2 top-2 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+        >
+          X
+        </button>
+        {!isConfirmingDelete ? (
+          <div className="flex items-center justify-between pb-10">
+            <h3 className="text-xl font-bold capitalize">
+              {isCreating ? "Create New List" : `${editListName} Details`}
+            </h3>
+            <>
+              <div className="flex justify-end">
+                {isCreating ? (
+                  <button
+                    onClick={onCreate}
+                    className="mr-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                  >
+                    Create
+                  </button>
+                ) : isEditing ? (
+                  <div className="flex gap-4">
+                    <button
+                      onClick={onSave}
+                      className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={onEditCancel}
+                      className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+                    >
+                      Close
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={onEditStart}
+                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                  >
+                    Edit
+                  </button>
+                )}
+                {!isCreating && !isEditing && (
+                  <button
+                    onClick={onConfirmDeleteStart}
+                    className="ml-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </>
+          </div>
+        ) : null}
+        {isConfirmingDelete ? (
+          <div className="text-center">
+            <p className="mb-4">Are you sure you want to delete this list?</p>
+            <div className="flex justify-center">
+              <button
+                onClick={onDelete}
+                className="mr-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+              >
+                Yes
+              </button>
+              <button
+                onClick={onConfirmDeleteCancel}
+                className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {isEditing || isCreating ? (
+              <>
+                <div className="mb-4">
+                  <label className="block font-bold">List Name:</label>
+                  <input
+                    type="text"
+                    value={editListName}
+                    onChange={(e) => onEditListNameChange(e.target.value)}
+                    className="w-full rounded border border-gray-300 px-2 py-1"
+                    disabled={!isEditing && !isCreating}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block font-bold">List Type:</label>
+                  <input
+                    type="text"
+                    value={editListType}
+                    onChange={(e) => onEditListTypeChange(e.target.value)}
+                    className="w-full rounded border border-gray-300 px-2 py-1"
+                    disabled={!isEditing && !isCreating}
+                  />
+                </div>
+              </>
+            ) : null}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ListModal;
