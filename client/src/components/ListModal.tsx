@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ItemResponse } from "../services/listService";
+import ListItem from "./ListItem";
 
 interface ListModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface ListModalProps {
   onSave: () => void;
   onCreate: () => void;
   onAddItem: (content: string) => void;
+  onEditItem: (content: string, itemId: string) => void;
   onDeleteItem: (itemId: string) => void;
   onDelete: () => void;
   onEditStart: () => void;
@@ -34,6 +36,7 @@ const ListModal: React.FC<ListModalProps> = ({
   onSave,
   onCreate,
   onAddItem,
+  onEditItem,
   onDeleteItem,
   onDelete,
   onEditStart,
@@ -54,8 +57,14 @@ const ListModal: React.FC<ListModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
-      <div className="relative w-4/5 rounded-lg bg-white px-6 py-20 md:w-1/3">
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-4/5 rounded-lg bg-white px-6 py-20 md:w-1/3"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           onClick={onClose}
           className="absolute right-2 top-2 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
@@ -183,21 +192,17 @@ const ListModal: React.FC<ListModalProps> = ({
             )}
           </>
         )}
-        <ul className="flex flex-col">
-          {listItems.map((item) => {
-            return (
-              <li className="flex items-center justify-between">
-                <p className="list-item py-2 text-red-600">{item.content}</p>
-                <button
-                  onClick={() => onDeleteItem(item._id)}
-                  className="rounded p-1 text-white hover:bg-red-600"
-                >
-                  🗑️
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        {!isConfirmingDelete ? (
+          <ul className="flex list-disc flex-col gap-4 py-4">
+            {listItems.map((item) => (
+              <ListItem
+                content={item.content}
+                deleteItem={() => onDeleteItem(item._id)}
+                editItem={(content) => onEditItem(content, item._id)}
+              />
+            ))}
+          </ul>
+        ) : null}
       </div>
     </div>
   );
