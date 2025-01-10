@@ -24,7 +24,7 @@ const ListItem: React.FC<ListItemProps> = ({
   };
 
   return (
-    <li className="flex items-center justify-between gap-4 pl-10">
+    <div className="flex items-center justify-between gap-4 pl-10">
       {isEditing ? (
         <div className="flex w-full items-center justify-between gap-x-7">
           <input
@@ -71,7 +71,7 @@ const ListItem: React.FC<ListItemProps> = ({
       >
         🗑️
       </button>
-    </li>
+    </div>
   );
 };
 

@@ -8,6 +8,7 @@ import {
   addItem,
   deleteItem,
   editItem,
+  reorderItems,
 } from "../services/listService";
 import ListModal from "./ListModal";
 
@@ -185,6 +186,30 @@ const UserLists: React.FC<Props> = ({ userId }) => {
     }
   };
 
+  const handleReorder = async (newOrder: string[]) => {
+    if (!selectedList) return;
+
+    try {
+      const updatedList = await reorderItems(selectedList._id, newOrder);
+      setSelectedList(updatedList);
+      setLists((prev) =>
+        prev
+          ? prev.map((list) =>
+              list._id === updatedList._id
+                ? { ...list, items: updatedList.items }
+                : list,
+            )
+          : null,
+      );
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete item from the list.",
+      );
+    }
+  };
+
   const memoizedCategorizedLists = useMemo(() => {
     if (!lists) return null;
 
@@ -255,6 +280,7 @@ const UserLists: React.FC<Props> = ({ userId }) => {
         onAddItem={handleAddItem}
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}
+        onReorder={handleReorder}
         onDelete={handleDelete}
         onEditStart={() => setIsEditing(true)}
         onEditCancel={() => setIsEditing(false)}
@@ -262,7 +288,7 @@ const UserLists: React.FC<Props> = ({ userId }) => {
         onConfirmDeleteCancel={() => setIsConfirmingDelete(false)}
         onEditListNameChange={setEditListName}
         onEditListTypeChange={setEditListType}
-        listItems={selectedList?.items}
+        listItems={selectedList?.items ?? []}
       />
     </div>
   );

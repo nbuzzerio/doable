@@ -144,7 +144,7 @@ export async function reorderItems(
   id: string,
   newOrder: string[],
 ): Promise<ListResponse> {
-  const response = await fetch(`${baseUrl}/${id}/items/reorder`, {
+  const response = await fetch(`${baseUrl}/${id}/reorder`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

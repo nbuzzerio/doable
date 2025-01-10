@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ItemResponse } from "../services/listService";
 import ListItem from "./ListItem";
 
@@ -15,6 +15,7 @@ interface ListModalProps {
   onAddItem: (content: string) => void;
   onEditItem: (content: string, itemId: string) => void;
   onDeleteItem: (itemId: string) => void;
+  onReorder: (newOrder: string[]) => void;
   onDelete: () => void;
   onEditStart: () => void;
   onEditCancel: () => void;
@@ -22,7 +23,7 @@ interface ListModalProps {
   onConfirmDeleteCancel: () => void;
   onEditListNameChange: (value: string) => void;
   onEditListTypeChange: (value: string) => void;
-  listItems: ItemResponse[] | undefined;
+  listItems: ItemResponse[];
 }
 
 const ListModal: React.FC<ListModalProps> = ({
@@ -38,6 +39,7 @@ const ListModal: React.FC<ListModalProps> = ({
   onAddItem,
   onEditItem,
   onDeleteItem,
+  onReorder,
   onDelete,
   onEditStart,
   onEditCancel,
@@ -45,9 +47,37 @@ const ListModal: React.FC<ListModalProps> = ({
   onConfirmDeleteCancel,
   onEditListNameChange,
   onEditListTypeChange,
-  listItems = [],
+  listItems,
 }) => {
   const [newItem, setNewItem] = useState("");
+  const [draggedItemId, setDraggedItemId] = useState("");
+
+  const orderedItems = listItems.sort((a, b) => {
+    if (a.order < b.order) return -1;
+    else return 1;
+  });
+
+  const handleDragStart = (id: string) => {
+    setDraggedItemId(id);
+  };
+
+  const handleDrop = useCallback(
+    (droppedOnId: string) => {
+      const listOrder = listItems.map((item) => item._id);
+      if (draggedItemId === null || draggedItemId === droppedOnId) return;
+
+      const draggedIndex = listOrder.indexOf(draggedItemId);
+      const droppedOnIndex = listOrder.indexOf(droppedOnId);
+
+      const newOrder = [...listOrder];
+
+      newOrder.splice(draggedIndex, 1); // Remove dragged item
+      newOrder.splice(droppedOnIndex, 0, draggedItemId); // Insert it at new position
+
+      onReorder(newOrder);
+    },
+    [draggedItemId, listItems],
+  );
 
   if (!isOpen) return null;
 
@@ -194,12 +224,21 @@ const ListModal: React.FC<ListModalProps> = ({
         )}
         {!isConfirmingDelete ? (
           <ul className="flex list-disc flex-col gap-4 py-4">
-            {listItems.map((item) => (
-              <ListItem
-                content={item.content}
-                deleteItem={() => onDeleteItem(item._id)}
-                editItem={(content) => onEditItem(content, item._id)}
-              />
+            {orderedItems.map((item) => (
+              <li
+                key={item._id}
+                draggable
+                onDragStart={() => handleDragStart(item._id)}
+                onDragOver={(e) => e.preventDefault()} // Allow drop
+                onDrop={() => handleDrop(item._id)}
+                className="hover:cursor-grab active:cursor-grabbing"
+              >
+                <ListItem
+                  content={item.content}
+                  deleteItem={() => onDeleteItem(item._id)}
+                  editItem={(content) => onEditItem(content, item._id)}
+                />
+              </li>
             ))}
           </ul>
         ) : null}
