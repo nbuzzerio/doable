@@ -3,11 +3,11 @@ export interface ListResponse {
   userId: string;
   listName: string;
   type: string;
-  items: { itemId: string; content: string; order: number }[];
+  items: ItemResponse[];
 }
 
 export interface ItemResponse {
-  itemId: string;
+  _id: string;
   content: string;
   order: number;
 }

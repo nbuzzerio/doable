@@ -6,6 +6,7 @@ import {
   createList,
   ListResponse,
   addItem,
+  deleteItem,
 } from "../services/listService";
 import ListModal from "./ListModal";
 
@@ -119,13 +120,44 @@ const UserLists: React.FC<Props> = ({ userId }) => {
     if (!selectedList) return;
 
     try {
-      await addItem(selectedList._id, content);
-      setLists(
-        (prev) => prev?.filter((list) => list._id !== selectedList._id) || null,
+      const updatedList = await addItem(selectedList._id, content);
+      setSelectedList(updatedList);
+      setLists((prev) =>
+        prev
+          ? prev.map((list) =>
+              list._id === updatedList._id
+                ? { ...list, items: updatedList.items }
+                : list,
+            )
+          : null,
       );
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "Failed to add item to the list.",
+      );
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    if (!selectedList) return;
+
+    try {
+      const updatedList = await deleteItem(selectedList._id, itemId);
+      setSelectedList(updatedList);
+      setLists((prev) =>
+        prev
+          ? prev.map((list) =>
+              list._id === updatedList._id
+                ? { ...list, items: updatedList.items }
+                : list,
+            )
+          : null,
+      );
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete item from the list.",
       );
     }
   };
@@ -196,6 +228,7 @@ const UserLists: React.FC<Props> = ({ userId }) => {
         onSave={handleEditSave}
         onCreate={handleCreateSave}
         onAddItem={handleAddItem}
+        onDeleteItem={handleDeleteItem}
         onDelete={handleDelete}
         onEditStart={() => setIsEditing(true)}
         onEditCancel={() => setIsEditing(false)}

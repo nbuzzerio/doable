@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ItemResponse } from "../services/listService";
 
 interface ListModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface ListModalProps {
   onSave: () => void;
   onCreate: () => void;
   onAddItem: (content: string) => void;
+  onDeleteItem: (itemId: string) => void;
   onDelete: () => void;
   onEditStart: () => void;
   onEditCancel: () => void;
@@ -18,7 +20,7 @@ interface ListModalProps {
   onConfirmDeleteCancel: () => void;
   onEditListNameChange: (value: string) => void;
   onEditListTypeChange: (value: string) => void;
-  listItems: { itemId: string; content: string; order: number }[] | undefined;
+  listItems: ItemResponse[] | undefined;
 }
 
 const ListModal: React.FC<ListModalProps> = ({
@@ -32,6 +34,7 @@ const ListModal: React.FC<ListModalProps> = ({
   onSave,
   onCreate,
   onAddItem,
+  onDeleteItem,
   onDelete,
   onEditStart,
   onEditCancel,
@@ -44,6 +47,11 @@ const ListModal: React.FC<ListModalProps> = ({
   const [newItem, setNewItem] = useState("");
 
   if (!isOpen) return null;
+
+  const handleAddItem = () => {
+    onAddItem(newItem);
+    setNewItem("");
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
@@ -157,8 +165,9 @@ const ListModal: React.FC<ListModalProps> = ({
                   disabled={isEditing && isCreating}
                 />
                 <button
-                  onClick={() => onAddItem(newItem)}
+                  onClick={handleAddItem}
                   className="rounded bg-green-500 p-1 text-white hover:bg-green-600"
+                  disabled={!newItem}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +186,15 @@ const ListModal: React.FC<ListModalProps> = ({
         <ul className="flex flex-col">
           {listItems.map((item) => {
             return (
-              <li className="list-item py-2 text-red-600">{item.content}</li>
+              <li className="flex items-center justify-between">
+                <p className="list-item py-2 text-red-600">{item.content}</p>
+                <button
+                  onClick={() => onDeleteItem(item._id)}
+                  className="rounded p-1 text-white hover:bg-red-600"
+                >
+                  🗑️
+                </button>
+              </li>
             );
           })}
         </ul>
