@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { ItemResponse } from "../services/listService";
 import ListItem from "./ListItem";
 
@@ -51,6 +51,9 @@ const ListModal: React.FC<ListModalProps> = ({
 }) => {
   const [newItem, setNewItem] = useState("");
   const [draggedItemId, setDraggedItemId] = useState("");
+  const [currentTouchId, setCurrentTouchId] = useState("");
+
+  const phantomRef = useRef<HTMLDivElement>(null);
 
   const orderedItems = listItems.sort((a, b) => {
     if (a.order < b.order) return -1;
@@ -76,7 +79,7 @@ const ListModal: React.FC<ListModalProps> = ({
 
       onReorder(newOrder);
     },
-    [draggedItemId, listItems],
+    [draggedItemId, listItems, onReorder],
   );
 
   if (!isOpen) return null;
@@ -86,11 +89,60 @@ const ListModal: React.FC<ListModalProps> = ({
     setNewItem("");
   };
 
+  const handleTouchStart = (id: string) => {
+    setDraggedItemId(id);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLLIElement>) => {
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    const phantom = phantomRef.current as HTMLDivElement;
+    phantom.style.display = "flex";
+
+    phantom.style.top = `${touch.pageY}px`;
+    phantom.style.left = `${touch.pageX}px`;
+
+    if (element) {
+      const parentWithId = element.closest("[data-id]");
+      if (parentWithId) {
+        const itemId = parentWithId.getAttribute("data-id");
+        if (itemId) {
+          setCurrentTouchId(itemId);
+        }
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    const phantom = phantomRef.current as HTMLDivElement;
+    phantom.style.display = "none";
+
+    const listOrder = listItems.map((item) => item._id);
+    if (draggedItemId === null || draggedItemId === currentTouchId) return;
+
+    const draggedIndex = listOrder.indexOf(draggedItemId);
+    const droppedOnIndex = listOrder.indexOf(currentTouchId);
+
+    const newOrder = [...listOrder];
+
+    newOrder.splice(draggedIndex, 1); // Remove dragged item
+    newOrder.splice(droppedOnIndex, 0, draggedItemId); // Insert it at new position
+
+    onReorder(newOrder);
+  };
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75"
       onClick={onClose}
     >
+      <div
+        className="pointer-events-none absolute z-30 hidden h-10 w-10 -translate-x-3/4 -translate-y-3/4 items-center justify-center rounded-full bg-green-600/20"
+        ref={phantomRef}
+      >
+        📒
+      </div>
       <div
         className="relative w-4/5 rounded-lg bg-white px-6 py-20 md:w-1/3"
         onClick={(e) => e.stopPropagation()}
@@ -231,6 +283,10 @@ const ListModal: React.FC<ListModalProps> = ({
                 onDragStart={() => handleDragStart(item._id)}
                 onDragOver={(e) => e.preventDefault()} // Allow drop
                 onDrop={() => handleDrop(item._id)}
+                data-id={item._id} // Add a data attribute to identify the element
+                onTouchStart={() => handleTouchStart(item._id)}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
                 className="hover:cursor-grab active:cursor-grabbing"
               >
                 <ListItem
